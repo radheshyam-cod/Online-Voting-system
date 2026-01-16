@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="National E-Voting Portal - Secure digital voting prototype for demonstration purposes">
+    <meta name="theme-color" content="#003366">
+    <title>National E-Voting Portal | Government of India</title>
+
+    <script src="assets/js/chart.js"></script>
+    <link rel="stylesheet" href="assets/css/fontawesome.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="gov-top-ribbon" role="note">
+        <div class="container flex-row">
+            <div class="gov-meta">
+                <span>भारत सरकार | GOVERNMENT OF INDIA</span>
+            </div>
+            <div class="gov-tools">
+                <span id="live-timer">Loading System Time...</span>
+                <span>Skip to Content | Screen Reader Access</span>
+            </div>
+        </div>
+    </div>
+
+    <header class="official-header" role="banner">
+        <div class="container header-grid">
+            <div class="branding-group">
+                <div class="emblem-box">
+                    <i class="fa-solid fa-landmark-dome"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>निर्वाचन आयोग</h1>
+                    <h2>Election Commission of India</h2>
+                    <p>National E-Voting Gateway</p>
+                </div>
+            </div>
+            <div class="branding-side">
+                <div class="digital-india">
+                    <i class="fa-solid fa-microchip"></i>
+                    <span>Digital India</span>
+                </div>
+                <div class="g20-logo">
+                    <span>G20</span>
+                    <small>भारत 2026 INDIA</small>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div id="integrity-announcement" class="container container-narrow margin-top-sm"></div>
+
+    <main class="page-content" role="main">
+        <div class="container container-medium">
+
+            <section id="view-login" class="office-panel animate-up">
+                <div class="panel-inner">
+                    <div class="panel-intro">
+                        <h3>Secure Voter Authentication</h3>
+                        <p>Authenticate your session using your 10-digit Voter ID (EPIC) Number.</p>
+                    </div>
+
+                    <div class="login-form">
+                        <div class="input-wrapper">
+                            <label for="voter-id-input">EPIC Number (Voter ID)</label>
+                            <input type="text" id="voter-id-input" placeholder="ABC1234567" maxlength="10" autocomplete="off" aria-describedby="login-error">
+                            <div id="login-error" class="error-hint d-none">
+                                <i class="fa-solid fa-circle-exclamation"></i> Invalid EPIC format. Please re-enter.
+                            </div>
+                        </div>
+
+                        <div class="security-tools">
+                            <span><i class="fa-solid fa-keyboard"></i> Virtual Keyboard Active</span>
+                            <span>Session: <strong id="session-code">...</strong></span>
+                        </div>
+
+                        <div class="action-row">
+                            <button id="btn-login" class="btn btn-gov" aria-label="Authenticate and verify voter ID">
+                                Authenticate & Verify <i class="fa-solid fa-shield-check"></i>
+                            </button>
+                        </div>
+
+                        <div class="alt-action">
+                            <button id="btn-results-link" class="link-btn">View Live Polling Statistics</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-ballot" class="office-panel d-none animate-up">
+                <div class="panel-intro align-center">
+                    <h2>Polling Booth</h2>
+                    <p>Electronic Voting Machine Simulation. Press the blue button to cast your vote.</p>
+                </div>
+
+                <div class="polling-station-layout">
+                    <!-- Unit 1: Ballot Unit -->
+                    <div class="evm-unit ballot-unit" id="evm-ballot-unit">
+                        <div class="evm-header">BALLOT UNIT 1 / 1</div>
+                        <div class="evm-rows-container" id="evm-rows">
+                            <!-- Rows will be injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Unit 2: VVPAT -->
+                    <div class="evm-unit vvpat-unit">
+                        <div class="evm-header">VVPAT</div>
+                        <div class="vvpat-window-frame">
+                            <div class="vvpat-glass" id="vvpat-glass"></div>
+                            <div class="paper-slip" id="vvpat-slip">
+                                <div class="slip-serial" id="v-serial">01</div>
+                                <div class="slip-name" id="v-name">Candidate Name</div>
+                                <img src="" alt="" class="slip-symbol" id="v-symbol">
+                            </div>
+                        </div>
+                        <div class="vvpat-label">VVPAT</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-results" class="office-panel d-none animate-up">
+                <div class="panel-intro">
+                    <h2>Election Trends Dashboard</h2>
+                    <p>Analysis based on the current local session ledger.</p>
+                </div>
+
+                <div class="analytics-grid">
+                    <div class="analytics-card span-2">
+                        <h4 class="card-label">Candidate-wise Vote Distribution</h4>
+                        <div class="chart-canvas-wrapper">
+                            <canvas id="resultsChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="analytics-card">
+                        <h4 class="card-label">Total Polled</h4>
+                        <div id="total-count" class="stat-highlight">0</div>
+                        <div class="stat-badge success"><i class="fa-solid fa-check"></i> Verified</div>
+                    </div>
+
+                    <div class="analytics-card">
+                        <h4 class="card-label">System Performance</h4>
+                        <div class="stat-highlight small">99.9%</div>
+                        <p class="stat-note">Uptime Node: DL-S3</p>
+                    </div>
+                </div>
+
+                <div class="action-footer align-center">
+                    <button id="btn-reset-session" class="btn btn-outline" aria-label="Reset session and return to login">
+                        <i class="fa-solid fa-arrow-rotate-left"></i> Initialize Next Session
+                    </button>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="official-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col about">
+                    <h4>About the Portal</h4>
+                    <p>The National E-Voting Portal is a secure prototype for digital democracy, showcasing client-side
+                        robustness and data persistence through modern web standards.</p>
+                </div>
+                <div class="footer-col disclosure">
+                    <h4>Internal Security Protocol</h4>
+                    <ul>
+                        <li><i class="fa-solid fa-lock"></i> SHA-256 ID Hashing</li>
+                        <li><i class="fa-solid fa-database"></i> IndexedDB Redundancy</li>
+                        <li><i class="fa-solid fa-shield-halved"></i> No Server Transmission</li>
+                    </ul>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2026 Election Commission of India.</p>
+                </div>
+            </div>
+    </footer>
+
+    <div id="confirmation-modal" class="gov-overlay" aria-hidden="true">
+        <div class="gov-modal">
+            <div class="modal-header">
+                <h3>Final Confirmation of Choice</h3>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to record your vote for:</p>
+                <div id="confirm-candidate-name" class="candidate-focus">...</div>
+                <div class="gov-warning">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    This action will permanently update your local browser-based ledger. Re-voting is strictly
+                    prohibited for the same ID.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-modal-cancel" class="btn btn-cancel">Cancel</button>
+                <button id="btn-modal-confirm" class="btn btn-gov">Yes, Confirm My Vote</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
