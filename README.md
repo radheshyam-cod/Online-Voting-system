@@ -1,158 +1,178 @@
-National E-Voting Portal
-Client-Side Web Application
-Overview
+# National E-Voting Portal (Client-Side Prototype)
 
-The National E-Voting Portal is a client-side web application prototype designed to demonstrate how a digital voting interface can be built using modern web technologies.
+A client-side **Electronic Voting Machine (EVM) + VVPAT simulation** built using **HTML, CSS, and JavaScript**.  
+This project demonstrates **one-vote enforcement, local vote persistence, and result visualization** for educational and demonstration purposes only.
 
-This project focuses on:
+> ⚠️ **Disclaimer**  
+> This is **NOT** a real voting system and is **NOT affiliated** with the Election Commission of India.  
+> No real voter data is used or collected.
 
-Secure user flow simulation
+---
 
-Local data persistence
+## 🎯 Project Objective
 
-UI structure inspired by Indian government portals
+To simulate the working of:
+- Voter authentication (EPIC-style input)
+- Electronic Voting Machine (EVM)
+- VVPAT verification flow
+- Vote storage and tallying
+- Real-time result visualization
 
-Vote casting and result visualization
+All logic runs **entirely in the browser**.
 
-⚠️ Important:
-This is not a real voting system. It is a front-end prototype only, built for academic and demonstration purposes.
+---
 
-Features
-1. Voter Authentication (Simulated)
+## 🛠 Tech Stack
 
-User enters a Voter ID (EPIC number).
+- **HTML5** – Semantic structure
+- **CSS3** – Government-style UI, EVM & VVPAT design
+- **JavaScript (Vanilla)** – Voting logic, storage, state control
+- **IndexedDB** – Persistent vote ledger
+- **LocalStorage** – Session metadata
+- **Chart.js** – Result visualization
 
-ID is hashed using SHA-256 in the browser.
+No backend. No frameworks.
 
-No raw ID is stored.
+---
 
-2. One-Vote Enforcement
+## ✨ Key Features
 
-Each hashed ID can vote only once per browser environment.
+### Voter Authentication
+- EPIC-style alphanumeric ID
+- One-vote enforcement using hashed ID
+- Duplicate voting blocked
 
-Repeat login redirects directly to results.
+### EVM Simulation
+- Physical EVM-style layout
+- Blue button voting
+- LED indicator and beep sound
+- Disabled inputs after vote
 
-3. Digital Ballot Interface
+### VVPAT Flow
+- Candidate slip display
+- Timed visibility
+- Automatic slip drop animation
 
-Party-wise candidate listing.
+### Vote Storage
+- Hash-based voter identity
+- Stored in:
+  - `localStorage`
+  - `IndexedDB`
+- Persistent across page reloads
 
-Confirmation modal before vote submission.
+### Results Dashboard
+- Party-wise vote count
+- Dynamic pie chart
+- Live updates per session
 
-Vote is locked after confirmation.
+### Admin Access
+- Hidden admin login
+- Direct results access
+- Session reset
 
-4. Local Data Persistence
+---
 
-LocalStorage for fast access.
+## 📁 Project Structure
 
-IndexedDB for redundancy and integrity.
-
-No server, no API, no external transmission.
-
-5. Results Dashboard
-
-Bar chart visualization using Chart.js.
-
-Candidate-wise vote count.
-
-Total votes displayed in real time.
-
-6. System Integrity Check
-
-Metadata comparison to detect local data mismatch.
-
-Warning banner shown if inconsistency is found.
-
-Tech Stack
-Layer	Technology
-Structure	HTML5
-Styling	CSS3
-Logic	Vanilla JavaScript
-Charts	Chart.js
-Storage	LocalStorage + IndexedDB
-Security (Client-side)	SHA-256 Web Crypto API
-Folder Structure
-project-root/
-│
-├── index.html
-├── style.css
-├── script.js
-│
+/
+├── index.html 
+├── style.css 
+├── script.js 
 ├── assets/
-│   ├── css/
-│   │   └── fontawesome.css
-│   ├── js/
-│   │   └── chart.js
-│   └── img/
-│       ├── party_inc.png
-│       ├── party_bjp.png
-│       ├── party_aap.png
-│       ├── party_ind.png
-│       └── party_nota.png
-│
+│ └── img/
+│ ├── party_bjp.png
+│ ├── party_inc.png
+│ ├── party_aap.png
+│ ├── party_jdu.png
+│ ├── party_npp.png
+│ ├── party_nota.png
+│ ├── election_commission.png
+│ └── user.png
 └── README.md
 
-How It Works (Flow)
+yaml
+Copy code
 
-User opens the portal.
+---
 
-System initializes clock, session code, and databases.
+## 🚀 How to Run
 
-User enters EPIC number.
+1. Clone or download the project
+2. Open `index.html` in any modern browser
+3. No server required
 
-EPIC is hashed locally using SHA-256.
+> Best tested on Chromium-based browsers
 
-System checks if hash already exists:
+---
 
-If yes → show results.
+## 🔐 Voting Logic (Simplified)
 
-If no → show ballot.
+1. User enters EPIC-style ID  
+2. ID is hashed locally  
+3. Hash checked against stored ledger  
+4. If unused:
+   - Ballot unlocked
+   - Vote recorded
+   - VVPAT shown
+5. If used:
+   - Voting blocked
 
-User selects a candidate.
+---
 
-Confirmation modal appears.
+## 🧠 Limitations (Intentional)
 
-Vote is stored locally.
+- Client-side only
+- No encryption
+- No real authentication
+- Data tied to browser
+- Easily resettable
 
-Results dashboard is displayed.
+This is **by design**.  
+The goal is **learning and demonstration**, not production security.
 
-Security Notes (Prototype Level)
+---
 
-✔ Hashing prevents raw ID storage
-✔ No server communication
-✔ No cookies or tracking
-✖ Not resistant to browser data clearing
-✖ Not suitable for real elections
+## 📚 Use Cases
 
-This project does not claim real-world security compliance.
-It is intentionally limited to demonstrate client-side logic only.
+- College projects
+- UI/UX demonstrations
+- Web technology learning
+- EVM/VVPAT process understanding
+- Hackathon prototypes
 
-Limitations
+---
 
-No backend or authentication server
+## ⚖️ Legal Notice
 
-No real voter verification
+This project:
+- Does **not** represent the Election Commission of India
+- Does **not** conduct real elections
+- Must **not** be used in real voting scenarios
 
-Votes reset if browser storage is cleared
+All names, symbols, and visuals are used **for educational simulation only**.
 
-Vulnerable to developer-tools tampering
+---
 
-Not legally or technically valid for real elections
+## 👤 Author
 
-These limitations are intentional and acceptable for an academic prototype.
+Built as a **front-end systems simulation project**  
+Focused on realism, flow accuracy, and UI discipline.
 
-Intended Use
+---
 
-College / school project
+## 🧩 Future Improvements (Optional)
 
-UI/UX demonstration
+- Backend vote validation
+- Cryptographic signatures
+- Multi-constituency support
+- Role-based access control
+- Secure audit logs
 
-Client-side data handling example
+---
 
-Understanding browser storage mechanisms
+## ⭐ Final Note
 
-Presentation or viva evaluation
+If you present this honestly as a **client-side voting simulation**, it’s solid.  
+If you try to sell it as a real voting system, it’s wrong. Don’t do that.
 
-Disclaimer
-
-This application is not affiliated with the Election Commission of India.
-All names, symbols, and references are used strictly for educational purposes.
+Build credibility by being precise.

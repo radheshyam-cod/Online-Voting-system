@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="National E-Voting Portal - Secure digital voting prototype for demonstration purposes">
-    <meta name="theme-color" content="#003366">
+    <meta name="description"
+        content="National E-Voting Portal - Secure digital voting prototype for demonstration purposes">
     <title>National E-Voting Portal | Government of India</title>
 
-    <script src="assets/js/chart.js"></script>
-    <link rel="stylesheet" href="assets/css/fontawesome.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -22,7 +22,8 @@
             </div>
             <div class="gov-tools">
                 <span id="live-timer">Loading System Time...</span>
-                <span>Skip to Content | Screen Reader Access</span>
+                <span>| Session: <b id="session-code">...</b></span>
+                <button id="btn-lang-toggle" class="btn-lang-toggle" onclick="toggleLanguage()">English / हिंदी</button>
             </div>
         </div>
     </div>
@@ -30,13 +31,14 @@
     <header class="official-header" role="banner">
         <div class="container header-grid">
             <div class="branding-group">
-                <div class="emblem-box">
-                    <i class="fa-solid fa-landmark-dome"></i>
+                <div class="emblem-box emblem-box-white">
+                    <img src="assets/img/election_commission.png" alt="ECI Logo" class="logo-img-fit">
                 </div>
                 <div class="logo-text">
                     <h1>निर्वाचन आयोग</h1>
                     <h2>Election Commission of India</h2>
-                    <p>National E-Voting Gateway</p>
+                    <p class="lang-en">National E-Voting Gateway</p>
+                    <p class="lang-hi">राष्ट्रीय ई-वोटिंग गेटवे</p>
                 </div>
             </div>
             <div class="branding-side">
@@ -52,6 +54,14 @@
         </div>
     </header>
 
+    <div class="disclaimer-strip">
+        <div class="container">
+            <div class="scrolling-text">
+                <span>Disclaimer: Trends displayed are based on the data entered in the system by the Returning Officers. Final data for each AC/PC will be shared in Form-20.</span>
+            </div>
+        </div>
+    </div>
+
     <div id="integrity-announcement" class="container container-narrow margin-top-sm"></div>
 
     <main class="page-content" role="main">
@@ -60,32 +70,39 @@
             <section id="view-login" class="office-panel animate-up">
                 <div class="panel-inner">
                     <div class="panel-intro">
-                        <h3>Secure Voter Authentication</h3>
-                        <p>Authenticate your session using your 10-digit Voter ID (EPIC) Number.</p>
+                        <h3 class="lang-en">Secure Voter Authentication</h3>
+                        <h3 class="lang-hi">सुरक्षित मतदाता प्रमाणीकरण</h3>
+                        <p class="lang-en">Authenticate your session using your 10-digit Voter ID (EPIC) Number.</p>
+                        <p class="lang-hi">अपने 10-अंकों वाले मतदाता पहचान पत्र (EPIC) नंबर का उपयोग करके सत्र को
+                            प्रमाणित करें।</p>
                     </div>
 
                     <div class="login-form">
                         <div class="input-wrapper">
-                            <label for="voter-id-input">EPIC Number (Voter ID)</label>
-                            <input type="text" id="voter-id-input" placeholder="ABC1234567" maxlength="10" autocomplete="off" aria-describedby="login-error">
+                            <label for="voter-id-input">
+                                <span class="lang-en">EPIC Number (Voter ID)</span>
+                                <span class="lang-hi">ईपीआईसी नंबर (मतदाता पहचान पत्र)</span>
+                            </label>
+                            <input type="text" id="voter-id-input" placeholder="ABC1234567" maxlength="10"
+                                autocomplete="off" aria-describedby="login-error">
                             <div id="login-error" class="error-hint d-none">
                                 <i class="fa-solid fa-circle-exclamation"></i> Invalid EPIC format. Please re-enter.
                             </div>
                         </div>
 
-                        <div class="security-tools">
-                            <span><i class="fa-solid fa-keyboard"></i> Virtual Keyboard Active</span>
-                            <span>Session: <strong id="session-code">...</strong></span>
-                        </div>
-
                         <div class="action-row">
                             <button id="btn-login" class="btn btn-gov" aria-label="Authenticate and verify voter ID">
-                                Authenticate & Verify <i class="fa-solid fa-shield-check"></i>
+                                <span class="lang-en">Authenticate & Verify</span>
+                                <span class="lang-hi">प्रमाणीकृत और सत्यापित करें</span>
+                                <i class="fa-solid fa-user-shield"></i>
                             </button>
                         </div>
 
                         <div class="alt-action">
-                            <button id="btn-results-link" class="link-btn">View Live Polling Statistics</button>
+                            <button id="btn-result-access" class="link-btn">
+                                <span class="lang-en">View Live Election Results (Public)</span>
+                                <span class="lang-hi">लाइव चुनाव परिणाम देखें (सार्वजनिक)</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -98,15 +115,11 @@
                 </div>
 
                 <div class="polling-station-layout">
-                    <!-- Unit 1: Ballot Unit -->
                     <div class="evm-unit ballot-unit" id="evm-ballot-unit">
                         <div class="evm-header">BALLOT UNIT 1 / 1</div>
-                        <div class="evm-rows-container" id="evm-rows">
-                            <!-- Rows will be injected by JS -->
-                        </div>
+                        <div class="evm-rows-container" id="evm-rows"></div>
                     </div>
 
-                    <!-- Unit 2: VVPAT -->
                     <div class="evm-unit vvpat-unit">
                         <div class="evm-header">VVPAT</div>
                         <div class="vvpat-window-frame">
@@ -114,7 +127,7 @@
                             <div class="paper-slip" id="vvpat-slip">
                                 <div class="slip-serial" id="v-serial">01</div>
                                 <div class="slip-name" id="v-name">Candidate Name</div>
-                                <img src="" alt="" class="slip-symbol" id="v-symbol">
+                                <img src="assets/img/user.png" alt="" class="slip-symbol" id="v-symbol">
                             </div>
                         </div>
                         <div class="vvpat-label">VVPAT</div>
@@ -128,57 +141,171 @@
                     <p>Analysis based on the current local session ledger.</p>
                 </div>
 
-                <div class="analytics-grid">
-                    <div class="analytics-card span-2">
-                        <h4 class="card-label">Candidate-wise Vote Distribution</h4>
-                        <div class="chart-canvas-wrapper">
-                            <canvas id="resultsChart"></canvas>
-                        </div>
+                <div class="eci-results-view">
+                    <div class="eci-result-header">
+                        <h2>General Election to Assembly Constituencies: Trends & Results</h2>
                     </div>
 
-                    <div class="analytics-card">
-                        <h4 class="card-label">Total Polled</h4>
-                        <div id="total-count" class="stat-highlight">0</div>
-                        <div class="stat-badge success"><i class="fa-solid fa-check"></i> Verified</div>
+                    <div class="scorecard-container" id="scorecards">
                     </div>
 
-                    <div class="analytics-card">
-                        <h4 class="card-label">System Performance</h4>
-                        <div class="stat-highlight small">99.9%</div>
-                        <p class="stat-note">Uptime Node: DL-S3</p>
+
+
+
+                    <div class="table-header-strip">Party Wise Vote Share</div>
+                    <div class="chart-canvas-wrapper chart-wrapper">
+                        <canvas id="resultsChart"></canvas>
                     </div>
                 </div>
+        </div>
 
-                <div class="action-footer align-center">
-                    <button id="btn-reset-session" class="btn btn-outline" aria-label="Reset session and return to login">
-                        <i class="fa-solid fa-arrow-rotate-left"></i> Initialize Next Session
-                    </button>
-                </div>
-            </section>
+        <div class="action-footer align-center">
+            <button id="btn-reset-session" class="btn btn-outline" aria-label="Reset session and return to login">
+                <i class="fa-solid fa-arrow-rotate-left"></i> Initialize Next Session
+            </button>
+        </div>
+        </section>
 
         </div>
     </main>
 
     <footer class="official-footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-col about">
-                    <h4>About the Portal</h4>
-                    <p>The National E-Voting Portal is a secure prototype for digital democracy, showcasing client-side
-                        robustness and data persistence through modern web standards.</p>
-                </div>
-                <div class="footer-col disclosure">
-                    <h4>Internal Security Protocol</h4>
-                    <ul>
-                        <li><i class="fa-solid fa-lock"></i> SHA-256 ID Hashing</li>
-                        <li><i class="fa-solid fa-database"></i> IndexedDB Redundancy</li>
-                        <li><i class="fa-solid fa-shield-halved"></i> No Server Transmission</li>
-                    </ul>
-                </div>
-                <div class="footer-bottom">
-                    <p>&copy; 2026 Election Commission of India.</p>
+        <div class="footer-top">
+            <div class="container">
+                <div class="footer-grid">
+                    <div class="footer-col about-eci">
+                        <div class="footer-heading-group">
+                            <h4>Election Commission of India</h4>
+                            <h4 class="lang-hindi">भारत निर्वाचन आयोग</h4>
+                        </div>
+                        <div class="eci-info">
+                            <div class="eci-logo-placeholder">
+                                <img src="assets/img/election_commission.png" alt="ECI Logo" class="logo-img-footer">
+                            </div>
+                            <p class="lang-en">
+                                The Election Commission of India is an autonomous constitutional authority responsible
+                                for administering election processes in India. The body administers elections to the Lok
+                                Sabha, Rajya Sabha, State Legislative Assemblies in India, and the offices of the
+                                President and Vice President in the country.
+                            </p>
+                            <p class="lang-hi">
+                                भारत निर्वाचन आयोग एक स्वायत्त संवैधानिक प्राधिकरण है जो भारत में चुनाव प्रक्रियाओं के
+                                प्रशासन के लिए जिम्मेदार है। यह निकाय भारत में लोकसभा, राज्यसभा, राज्य विधानसभाओं और देश
+                                में राष्ट्रपति और उपराष्ट्रपति के कार्यालयों के चुनावों का संचालन करता है।
+                            </p>
+                        </div>
+                        <div class="address-row">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span>Nirvachan Sadan, Ashoka Road, New Delhi 110001</span>
+                        </div>
+                        <div class="address-row lang-hindi">
+                            <span>निर्वाचन सदन, अशोक रोड, नई दिल्ली 110001</span>
+                        </div>
+                    </div>
+
+                    <div class="footer-col election-stamp-col">
+                        <div class="election-stamp">
+                            <div class="stamp-header">
+                                <span>चुनाव का पर्व</span>
+                                <small>DESH KA GARV</small>
+                            </div>
+                            <div class="stamp-body">
+                                <span>GENERAL</span>
+                                <span>ELECTION</span>
+                                <span class="year">2024</span>
+                            </div>
+                            <div class="stamp-footer">
+                                elections24.eci.gov.in
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="footer-col quick-links">
+                        <div class="footer-heading-group">
+                            <h4>Quick Links</h4>
+                            <h4 class="lang-hindi">त्वरित लिंक</h4>
+                        </div>
+                        <div class="links-columns">
+                            <ul>
+                                <li><a href="#"><span class="lang-en">About ECI</span><span class="lang-hi">ईसीआई के
+                                            बारे में</span></a></li>
+                                <li><a href="#"><span class="lang-en">Directory</span><span
+                                            class="lang-hi">निर्देशिका</span></a></li>
+                                <li><a href="#"><span class="lang-en">Contact Us</span><span class="lang-hi">संपर्क
+                                            करें</span></a></li>
+                                <li><a href="#"><span class="lang-en">Public Grievance</span><span class="lang-hi">लोक
+                                            शिकायत</span></a></li>
+                                <li><a href="#"><span class="lang-en">RTI Online</span><span class="lang-hi">आरटीआई
+                                            ऑनलाइन</span></a></li>
+                                <li><a href="#"><span class="lang-en">eOffice</span><span
+                                            class="lang-hi">ई-ऑफिस</span></a></li>
+                            </ul>
+                            <ul>
+                                <li><a href="#">Apply for Voter Card</a></li>
+                                <li><a href="#">SVEEP</a></li>
+                                <li><a href="#">Service Voter Portal</a></li>
+                                <li><a href="#">Download cVIGIL</a></li>
+                                <li><a href="#">Candidate Affidavits</a></li>
+                                <li><a href="#">APAR</a></li>
+                            </ul>
+                            <ul>
+                                <li><a href="#">International Cooperation</a></li>
+                                <li><a href="#">India A-WEB Centre</a></li>
+                                <li><a href="#">VoiceNet</a></li>
+                                <li><a href="#">MCC Cases</a></li>
+                                <li><a href="#">Political Parties Reg.</a></li>
+                                <li><a href="#">Site Map</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="footer-col app-links">
+                        <div class="footer-heading-group">
+                            <h4>ECI Apps Links</h4>
+                            <h4 class="lang-hindi">ईसीआई ऐप्स लिंक</h4>
+                        </div>
+                        <div class="apps-grid">
+                            <div class="app-icon-box" title="Voter Helpline">
+                                <i class="fa-solid fa-hand-pointer"></i>
+                                <span>Voter</span>
+                            </div>
+                            <div class="app-icon-box" title="PwD App">
+                                <i class="fa-solid fa-wheelchair"></i>
+                            </div>
+                            <div class="app-icon-box" title="KYC App">
+                                <span class="app-text">KYC</span>
+                                <small>KNOW YOUR CANDIDATE</small>
+                            </div>
+                            <div class="app-icon-box" title="cVIGIL">
+                                <i class="fa-solid fa-location-dot"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
+
+        <div class="footer-bottom-bar">
+            <div class="container flex-row">
+                <div class="social-links">
+                    <a href="https://www.facebook.com/ECI/" aria-label="Facebook"><i
+                            class="fa-brands fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/ecisveep/" aria-label="Instagram"><i
+                            class="fa-brands fa-instagram"></i></a>
+                    <a href="https://x.com/SpokespersonECI" aria-label="Twitter"><i
+                            class="fa-brands fa-x-twitter"></i></a>
+                    <a href="https://www.youtube.com/eci" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                </div>
+                <div class="copyright-text">
+                    <p>&copy; Copyright Election Commission of India 2025</p>
+                    <p class="lang-hindi">© कॉपीराइट भारत निर्वाचन आयोग 2025</p>
+                </div>
+                <button class="scroll-top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'});"
+                    aria-label="Scroll to top">
+                    <i class="fa-solid fa-arrow-up"></i>
+                </button>
+            </div>
+        </div>
     </footer>
 
     <div id="confirmation-modal" class="gov-overlay" aria-hidden="true">
