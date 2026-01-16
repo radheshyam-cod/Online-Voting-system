@@ -296,8 +296,7 @@ function saveVoteInternal(cid) {
         tx.objectStore(IDB_STORE).put({ id: sessionHash, ...newRecord });
     }
     setTimeout(() => {
-        alert("Vote Cast Successfully!");
-        location.reload();
+        goToView('results');
     }, 1500);
 }
 
@@ -333,7 +332,7 @@ function showMyResults() {
     if (totalV === 0) {
         myChartInstance = new Chart(ctx, {
             type: 'pie',
-            data: { labels: ['No Votes'], datasets: [{ data: [1], backgroundColor: ['#e0e0e0'] }] },
+            data: { labels: ['No Votes Cast'], datasets: [{ data: [1], backgroundColor: ['#e0e0e0'] }] },
             options: { responsive: true, maintainAspectRatio: false }
         });
     } else {
@@ -341,9 +340,27 @@ function showMyResults() {
             type: 'pie',
             data: {
                 labels: candidates.map(c => c.party),
-                datasets: [{ data: candidates.map(c => counts[c.party]), backgroundColor: candidates.map(c => c.color) }]
+                datasets: [{
+                    data: candidates.map(c => counts[c.party]),
+                    backgroundColor: candidates.map(c => c.color)
+                }]
             },
-            options: { responsive: true, maintainAspectRatio: false }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                let val = context.raw;
+                                let pct = ((val / totalV) * 100).toFixed(1);
+                                return `${context.label}: ${val} votes (${pct}%)`;
+                            }
+                        }
+                    }
+                }
+            }
         });
     }
 }
@@ -393,5 +410,3 @@ function showError(message) {
 
 window.onload = initSystem;
 window.pressBlueButton = pressBlueButton;
-
-
