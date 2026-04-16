@@ -4,20 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="National E-Voting Portal - Secure digital voting prototype for demonstration purposes">
+    <meta name="description"
+        content="National E-Voting Portal - Secure digital voting prototype for demonstration purposes">
     <title>National E-Voting Portal | Government of India</title>
 
-    <!-- External Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <!-- Custom Styles -->
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <!-- Top Black Ribbon -->
     <div class="gov-top-ribbon" role="note">
         <div class="container flex-row">
             <div class="gov-meta">
@@ -31,7 +28,6 @@
         </div>
     </div>
 
-    <!-- Main Header -->
     <header class="official-header" role="banner">
         <div class="container header-grid">
             <div class="branding-group">
@@ -58,30 +54,28 @@
         </div>
     </header>
 
-    <!-- Disclaimer Bar -->
     <div class="disclaimer-strip">
         <div class="container">
             <div class="scrolling-text">
-                <span>Disclaimer: Trends displayed are based on the data entered in the system by the Returning Officers. Final data for each AC/PC will be shared in Form-20.</span>
+                <span>Disclaimer: Trends displayed are based on the data entered in the system by the Returning
+                    Officers. Final data for each AC/PC will be shared in Form-20.</span>
             </div>
         </div>
     </div>
 
-    <!-- Integrity Check Message -->
     <div id="integrity-announcement" class="container container-narrow margin-top-sm"></div>
 
-    <!-- Main Content Area -->
     <main class="page-content" role="main">
         <div class="container container-medium">
 
-            <!-- LOGIN SECTION -->
             <section id="view-login" class="office-panel animate-up">
                 <div class="panel-inner">
                     <div class="panel-intro">
                         <h3 class="lang-en">Secure Voter Authentication</h3>
                         <h3 class="lang-hi">सुरक्षित मतदाता प्रमाणीकरण</h3>
                         <p class="lang-en">Authenticate your session using your 10-digit Voter ID (EPIC) Number.</p>
-                        <p class="lang-hi">अपने 10-अंकों वाले मतदाता पहचान पत्र (EPIC) नंबर का उपयोग करके सत्र को प्रमाणित करें।</p>
+                        <p class="lang-hi">अपने 10-अंकों वाले मतदाता पहचान पत्र (EPIC) नंबर का उपयोग करके सत्र को
+                            प्रमाणित करें।</p>
                     </div>
 
                     <div class="login-form">
@@ -90,7 +84,8 @@
                                 <span class="lang-en">EPIC Number (Voter ID)</span>
                                 <span class="lang-hi">ईपीआईसी नंबर (मतदाता पहचान पत्र)</span>
                             </label>
-                            <input type="text" id="voter-id-input" placeholder="ABC1234567" maxlength="10" autocomplete="off" aria-describedby="login-error">
+                            <input type="text" id="voter-id-input" placeholder="ABC1234567" maxlength="10"
+                                autocomplete="off" aria-describedby="login-error">
                             <div id="login-error" class="error-hint d-none">
                                 <i class="fa-solid fa-circle-exclamation"></i> Invalid EPIC format. Please re-enter.
                             </div>
@@ -114,7 +109,6 @@
                 </div>
             </section>
 
-            <!-- BALLOT SECTION -->
             <section id="view-ballot" class="office-panel d-none animate-up">
                 <div class="panel-intro align-center">
                     <h2>Polling Booth</h2>
@@ -122,13 +116,11 @@
                 </div>
 
                 <div class="polling-station-layout">
-                    <!-- Ballot Unit -->
                     <div class="evm-unit ballot-unit" id="evm-ballot-unit">
                         <div class="evm-header">BALLOT UNIT 1 / 1</div>
                         <div class="evm-rows-container" id="evm-rows"></div>
                     </div>
 
-                    <!-- VVPAT Unit -->
                     <div class="evm-unit vvpat-unit">
                         <div class="evm-header">VVPAT</div>
                         <div class="vvpat-window-frame">
@@ -144,7 +136,6 @@
                 </div>
             </section>
 
-            <!-- RESULTS SECTION -->
             <section id="view-results" class="office-panel d-none animate-up">
                 <div class="panel-intro">
                     <h2>Election Trends Dashboard</h2>
@@ -156,20 +147,23 @@
                         <h2>General Election to Assembly Constituencies: Trends & Results</h2>
                     </div>
 
-                    <!-- Party Scorecards -->
-                    <div class="scorecard-container" id="scorecards"></div>
+                    <div class="scorecard-container" id="scorecards">
+                    </div>
 
-                    <!-- Chart Header -->
-                    <div class="table-header-strip">Voting Results</div>
+
+
+
+                    <div class="table-header-strip"> Voting Results</div>
                     <div class="chart-canvas-wrapper chart-wrapper">
                         <canvas id="resultsChart"></canvas>
                     </div>
                 </div>
 
-                <!-- Reset Button -->
+
                 <div class="action-footer align-center">
-                    <button id="btn-reset-session" class="btn btn-outline" aria-label="Reset session and return to login">
-                        <i class="fa-solid fa-rotate-left"></i> Initialize Next Session
+                    <button id="btn-reset-session" class="btn btn-outline"
+                        aria-label="Reset session and return to login">
+                        <i class="fa-solid fa-arrow-rotate-left"></i> Initialize Next Session
                     </button>
                 </div>
             </section>
@@ -177,12 +171,10 @@
         </div>
     </main>
 
-    <!-- FOOTER SECTION -->
     <footer class="official-footer">
         <div class="footer-top">
             <div class="container">
                 <div class="footer-grid">
-                
                     <div class="footer-col about-eci">
                         <div class="footer-heading-group">
                             <h4>Election Commission of India</h4>
@@ -193,10 +185,15 @@
                                 <img src="assets/img/election_commission.png" alt="ECI Logo" class="logo-img-footer">
                             </div>
                             <p class="lang-en">
-                                The Election Commission of India is an autonomous constitutional authority responsible for administering election processes in India. The body administers elections to the Lok Sabha, Rajya Sabha, State Legislative Assemblies in India, and the offices of the President and Vice President in the country.
+                                The Election Commission of India is an autonomous constitutional authority responsible
+                                for administering election processes in India. The body administers elections to the Lok
+                                Sabha, Rajya Sabha, State Legislative Assemblies in India, and the offices of the
+                                President and Vice President in the country.
                             </p>
                             <p class="lang-hi">
-                                भारत निर्वाचन आयोग एक स्वायत्त संवैधानिक प्राधिकरण है जो भारत में चुनाव प्रक्रियाओं के प्रशासन के लिए जिम्मेदार है। यह निकाय भारत में लोकसभा, राज्यसभा, राज्य विधानसभाओं और देश में राष्ट्रपति और उपराष्ट्रपति के कार्यालयों के चुनावों का संचालन करता है।
+                                भारत निर्वाचन आयोग एक स्वायत्त संवैधानिक प्राधिकरण है जो भारत में चुनाव प्रक्रियाओं के
+                                प्रशासन के लिए जिम्मेदार है। यह निकाय भारत में लोकसभा, राज्यसभा, राज्य विधानसभाओं और देश
+                                में राष्ट्रपति और उपराष्ट्रपति के कार्यालयों के चुनावों का संचालन करता है।
                             </p>
                         </div>
                         <div class="address-row">
@@ -207,6 +204,7 @@
                             <span>निर्वाचन सदन, अशोक रोड, नई दिल्ली 110001</span>
                         </div>
                     </div>
+
                     <div class="footer-col election-stamp-col">
                         <div class="election-stamp">
                             <div class="stamp-header">
@@ -218,9 +216,12 @@
                                 <span>ELECTION</span>
                                 <span class="year">2024</span>
                             </div>
-                            <div class="stamp-footer">elections24.eci.gov.in</div>
+                            <div class="stamp-footer">
+                                elections24.eci.gov.in
+                            </div>
                         </div>
                     </div>
+
                     <div class="footer-col quick-links">
                         <div class="footer-heading-group">
                             <h4>Quick Links</h4>
@@ -228,12 +229,18 @@
                         </div>
                         <div class="links-columns">
                             <ul>
-                                <li><a href="#"><span class="lang-en">About ECI</span><span class="lang-hi">ईसीआई के बारे में</span></a></li>
-                                <li><a href="#"><span class="lang-en">Directory</span><span class="lang-hi">निर्देशिका</span></a></li>
-                                <li><a href="#"><span class="lang-en">Contact Us</span><span class="lang-hi">संपर्क करें</span></a></li>
-                                <li><a href="#"><span class="lang-en">Public Grievance</span><span class="lang-hi">लोक शिकायत</span></a></li>
-                                <li><a href="#"><span class="lang-en">RTI Online</span><span class="lang-hi">आरटीआई ऑनलाइन</span></a></li>
-                                <li><a href="#"><span class="lang-en">eOffice</span><span class="lang-hi">ई-ऑफिस</span></a></li>
+                                <li><a href="#"><span class="lang-en">About ECI</span><span class="lang-hi">ईसीआई के
+                                            बारे में</span></a></li>
+                                <li><a href="#"><span class="lang-en">Directory</span><span
+                                            class="lang-hi">निर्देशिका</span></a></li>
+                                <li><a href="#"><span class="lang-en">Contact Us</span><span class="lang-hi">संपर्क
+                                            करें</span></a></li>
+                                <li><a href="#"><span class="lang-en">Public Grievance</span><span class="lang-hi">लोक
+                                            शिकायत</span></a></li>
+                                <li><a href="#"><span class="lang-en">RTI Online</span><span class="lang-hi">आरटीआई
+                                            ऑनलाइन</span></a></li>
+                                <li><a href="#"><span class="lang-en">eOffice</span><span
+                                            class="lang-hi">ई-ऑफिस</span></a></li>
                             </ul>
                             <ul>
                                 <li><a href="#">Apply for Voter Card</a></li>
@@ -253,6 +260,7 @@
                             </ul>
                         </div>
                     </div>
+
                     <div class="footer-col app-links">
                         <div class="footer-heading-group">
                             <h4>ECI Apps Links</h4>
@@ -275,28 +283,33 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
+
         <div class="footer-bottom-bar">
             <div class="container flex-row">
                 <div class="social-links">
-                    <a href="https://www.facebook.com/ECI/" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="https://www.instagram.com/ecisveep/" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="https://x.com/SpokespersonECI" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+                    <a href="https://www.facebook.com/ECI/" aria-label="Facebook"><i
+                            class="fa-brands fa-facebook-f"></i></a>
+                    <a href="https://www.instagram.com/ecisveep/" aria-label="Instagram"><i
+                            class="fa-brands fa-instagram"></i></a>
+                    <a href="https://x.com/SpokespersonECI" aria-label="Twitter"><i
+                            class="fa-brands fa-x-twitter"></i></a>
                     <a href="https://www.youtube.com/eci" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
                 </div>
                 <div class="copyright-text">
                     <p>&copy; Copyright Election Commission of India 2025</p>
                     <p class="lang-hindi">© कॉपीराइट भारत निर्वाचन आयोग 2025</p>
                 </div>
-                <button class="scroll-top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'});" aria-label="Scroll to top">
+                <button class="scroll-top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'});"
+                    aria-label="Scroll to top">
                     <i class="fa-solid fa-arrow-up"></i>
                 </button>
             </div>
         </div>
     </footer>
+
     <div id="confirmation-modal" class="gov-overlay" aria-hidden="true">
         <div class="gov-modal">
             <div class="modal-header">
@@ -307,7 +320,8 @@
                 <div id="confirm-candidate-name" class="candidate-focus">...</div>
                 <div class="gov-warning">
                     <i class="fa-solid fa-triangle-exclamation"></i>
-                    This action will permanently update your local browser-based ledger. Re-voting is strictly prohibited for the same ID.
+                    This action will permanently update your local browser-based ledger. Re-voting is strictly
+                    prohibited for the same ID.
                 </div>
             </div>
             <div class="modal-footer">
@@ -316,6 +330,7 @@
             </div>
         </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 

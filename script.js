@@ -1,14 +1,13 @@
 let ledger = [];
 let sessionHash = null;
 let db = null;
-let chartInstance = null;
+let myChartInstance = null;
 let isVoting = false;
 let audioCtx = null;
 
 const LS_KEY = 'official_vote_v5';
 const IDB_DB = 'GovSystemDB';
 const IDB_STORE = 'ledger';
-
 const VVPAT_DISPLAY_TIME = 7000;
 const VVPAT_DROP_TIME = 600;
 
@@ -25,63 +24,57 @@ async function initSystem() {
     try {
         updateSystemClock();
         makeSessionCode();
-        await openDatabase();
-        loadLocalData();
-        await syncData();
-        checkDataIntegrity();
-        setupButtons();
-        setupKeyboard();
-        
+
+        await openMyDatabase();
+        loadMyLocalData();
+        await syncMyData();
+
+        checkMyData();
+        setupMyButtons();
+        setupKeyboardShortcuts();
     } catch (error) {
-        console.log('Error initializing system:', error);
+        console.error(error);
     }
 }
 
 function updateSystemClock() {
-    let timerElement = document.getElementById('live-timer');
-    if (timerElement) {
-        setInterval(function() {
-            let now = new Date();
-            timerElement.innerText = now.toLocaleDateString() + ' | ' + now.toLocaleTimeString() + ' | SYSTEM ONLINE';
-        }, 1000);
-    }
-}
-
-function makeSessionCode() {
-    let code = Math.random().toString(36).substring(2, 8).toUpperCase();
-    let sc = document.getElementById('session-code');
-    if (sc) {
-        sc.innerText = code;
-    }
+    let timerArea = document.getElementById('live-timer');
+    setInterval(function () {
+        let now = new Date();
+        if (timerArea) timerArea.innerText = now.toLocaleDateString() + ' | ' + now.toLocaleTimeString() + ' | SYSTEM ONLINE';
+    }, 1000);
 }
 
 function toggleLanguage() {
     document.body.classList.toggle('show-hindi');
 }
 
-function openDatabase() {
-    return new Promise(function(resolve, reject) {
+function makeSessionCode() {
+    let code = Math.random().toString(36).substring(2, 8).toUpperCase();
+    let sc = document.getElementById('session-code');
+    if (sc) sc.innerText = code;
+}
+
+function openMyDatabase() {
+    return new Promise(function (resolve, reject) {
         let request = indexedDB.open(IDB_DB, 1);
-        
-        request.onupgradeneeded = function(e) {
+        request.onupgradeneeded = function (e) {
             let database = e.target.result;
             if (!database.objectStoreNames.contains(IDB_STORE)) {
-                database.createObjectStore(IDB_STORE, { keyPath: 'id' });
+                database.createObjectStore(IDB_STORE, { keyPath: "id" });
             }
         };
-        
-        request.onsuccess = function(e) {
+        request.onsuccess = function (e) {
             db = e.target.result;
             resolve(db);
         };
-        
-        request.onerror = function(e) {
+        request.onerror = function (e) {
             reject(e);
         };
     });
 }
 
-function loadLocalData() {
+function loadMyLocalData() {
     let data = localStorage.getItem(LS_KEY);
     if (data) {
         ledger = JSON.parse(data);
@@ -90,19 +83,18 @@ function loadLocalData() {
     }
 }
 
-async function syncData() {
+async function syncMyData() {
     if (!db) return;
-    
-    let transaction = db.transaction(IDB_STORE, 'readwrite');
+    let transaction = db.transaction(IDB_STORE, "readwrite");
     let store = transaction.objectStore(IDB_STORE);
 
     for (let i = 0; i < ledger.length; i++) {
         store.put({ id: ledger[i].hash, ...ledger[i] });
     }
 
-    return new Promise(function(resolve) {
+    return new Promise(function (resolve) {
         let req = store.getAll();
-        req.onsuccess = function(e) {
+        req.onsuccess = function (e) {
             let idbData = e.target.result;
             let localHashes = ledger.map(l => l.hash);
 
@@ -111,54 +103,45 @@ async function syncData() {
                     ledger.push({ hash: idbData[i].id, ...idbData[i] });
                 }
             }
-            
             localStorage.setItem(LS_KEY, JSON.stringify(ledger));
             resolve();
         };
     });
 }
 
-function checkDataIntegrity() {
+function checkMyData() {
     let metaKey = LS_KEY + '_meta';
-    let expected = parseInt(localStorage.getItem(metaKey) || '0');
+    let expected = parseInt(localStorage.getItem(metaKey) || "0");
     if (ledger.length < expected) {
         let ia = document.getElementById('integrity-announcement');
-        if (ia) {
-            ia.innerHTML = '<div class="gov-warning">Data Integrity Error Detected</div>';
-        }
+        if (ia) ia.innerHTML = '<div class="gov-warning">Integrity Error</div>';
     }
 }
 
-async function hashVoterID(input) {
+async function getMyHash(input) {
     let hash = 0;
     let str = input.toUpperCase().trim();
-    
     for (let i = 0; i < str.length; i++) {
         let char = str.charCodeAt(i);
         hash = ((hash << 5) - hash) + char;
         hash = hash & hash;
     }
-    
     return Math.abs(hash).toString(16);
 }
 
 function goToView(viewName) {
     let allSections = document.querySelectorAll('section');
     allSections.forEach(s => s.classList.add('d-none'));
-    
     let target = document.getElementById('view-' + viewName);
-    if (target) {
-        target.classList.remove('d-none');
-    }
-    
+    if (target) target.classList.remove('d-none');
     if (viewName === 'results') {
-        loadResults();
+        showMyResults();
     }
 }
 
 async function loginUser() {
     let inputEl = document.getElementById('voter-id-input');
-    let userInput = inputEl ? inputEl.value.trim() : '';
+    let userInput = inputEl ? inputEl.value.trim() : "";
     let errorArea = document.getElementById('login-error');
     let loginBtn = document.getElementById('btn-login');
 
@@ -172,123 +155,106 @@ async function loginUser() {
     }
 
     try {
-        sessionHash = await hashVoterID(userInput);
-        
+        sessionHash = await getMyHash(userInput);
         let alreadyVoted = ledger.some(record => record.hash === sessionHash);
-        
+
         if (alreadyVoted) {
-            showAlert('You have already cast your vote');
+            showError('Already Voted');
         } else {
-            showBallotScreen();
+            showBallot();
             goToView('ballot');
         }
     } catch (error) {
-        console.log(error);
-        showAlert('Login failed. Please try again.');
+        console.error(error);
+        showError('Login Failed');
     } finally {
         if (loginBtn) loginBtn.disabled = false;
     }
 }
 
 function handleAdminLogin() {
-    let user = prompt('Enter Official ID:');
-    let pass = prompt('Enter Password:');
-    
+    let user = prompt("Official ID:");
+    let pass = prompt("Password:");
     if (user === 'ADMIN' && pass === 'ECI2024') {
         goToView('results');
     } else {
-        alert('Access Denied!');
+        alert("Access Denied");
     }
 }
 
-function showBallotScreen() {
+function showBallot() {
     let container = document.getElementById('evm-rows');
     if (!container) return;
-    
     container.innerHTML = '';
 
-    candidates.forEach(function(c, i) {
+    candidates.forEach((c, i) => {
         let serial = (i + 1).toString().padStart(2, '0');
-        container.innerHTML += 
-            '<div class="candidate-row" id="row-' + c.id + '">' +
-                '<div class="col-serial">' + serial + '</div>' +
-                '<div class="col-details">' +
-                    '<div class="c-name">' + c.name + '</div>' +
-                    '<img src="' + c.logo + '" class="c-symbol" alt="' + c.party + '">' +
-                '</div>' +
-                '<div class="col-action">' +
-                    '<div class="led-bulb" id="led-' + c.id + '"></div>' +
-                    '<button class="evm-button" onclick="pressButton(\'' + c.id + '\', ' + i + ')" id="btn-' + c.id + '"></button>' +
-                '</div>' +
-            '</div>';
+        container.innerHTML += `
+            <div class="candidate-row" id="row-${c.id}">
+                <div class="col-serial">${serial}</div>
+                <div class="col-details">
+                    <div class="c-name">${c.name}</div>
+                    <img src="${c.logo}" class="c-symbol" alt="${c.party}">
+                </div>
+                <div class="col-action">
+                    <div class="led-bulb" id="led-${c.id}"></div>
+                    <button class="evm-button" onclick="pressBlueButton('${c.id}', ${i})" id="btn-${c.id}"></button>
+                </div>
+            </div>
+        `;
     });
 }
 
-function playBeepSound() {
-    if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-    }
-    
-    let osc = audioCtx.createOscillator();
-    let gain = audioCtx.createGain();
-    
+function playBeep() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
     osc.connect(gain);
     gain.connect(audioCtx.destination);
-    
     osc.type = 'square';
     osc.frequency.setValueAtTime(2000, audioCtx.currentTime);
-    
     gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
     gain.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 0.1);
     gain.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + 1.5);
     gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 2.0);
-    
     osc.start();
     osc.stop(audioCtx.currentTime + 2.0);
 }
 
-async function runVVPAT(candidate) {
+async function runVVPATSequence(candidate) {
     let glass = document.getElementById('vvpat-glass');
     let slip = document.getElementById('vvpat-slip');
     let candidateIndex = candidates.findIndex(c => c.id === candidate.id);
-
     document.getElementById('v-serial').innerText = (candidateIndex + 1).toString().padStart(2, '0');
     document.getElementById('v-name').innerText = candidate.name;
     let symbolImg = document.getElementById('v-symbol');
     symbolImg.src = candidate.logo;
     symbolImg.alt = candidate.party;
-
     if (glass) glass.classList.add('lit');
     if (slip) {
         slip.classList.remove('drop');
         slip.classList.add('visible');
     }
-
-    await new Promise(resolve => setTimeout(resolve, VVPAT_DISPLAY_TIME));
-
+    await new Promise(r => setTimeout(r, VVPAT_DISPLAY_TIME));
     if (slip) {
         slip.classList.remove('visible');
         slip.classList.add('drop');
     }
-
-    await new Promise(resolve => setTimeout(resolve, VVPAT_DROP_TIME));
-
+    await new Promise(r => setTimeout(r, VVPAT_DROP_TIME));
     if (glass) glass.classList.remove('lit');
 }
 
-function pressButton(cid, index) {
+async function pressBlueButton(cid, index) {
     if (isVoting) return;
-    showVoteConfirmation(cid, index);
+    showConfirmation(cid, index);
 }
 
-function showVoteConfirmation(cid, index) {
-    let modal = document.getElementById('confirmation-modal');
-    let nameDisplay = document.getElementById('confirm-candidate-name');
-    let confirmBtn = document.getElementById('btn-modal-confirm');
-    let cancelBtn = document.getElementById('btn-modal-cancel');
+function showConfirmation(cid, index) {
+    const modal = document.getElementById('confirmation-modal');
+    const nameDisplay = document.getElementById('confirm-candidate-name');
+    const confirmBtn = document.getElementById('btn-modal-confirm');
+    const cancelBtn = document.getElementById('btn-modal-cancel');
 
     if (!modal || !nameDisplay || !confirmBtn || !cancelBtn) return;
 
@@ -296,59 +262,47 @@ function showVoteConfirmation(cid, index) {
     modal.classList.add('active');
     modal.setAttribute('aria-hidden', 'false');
 
-    // confirm button
-    confirmBtn.onclick = function() {
+    confirmBtn.onclick = () => {
         modal.classList.remove('active');
         modal.setAttribute('aria-hidden', 'true');
-        castVote(cid, index);
+        proceedWithVote(cid, index);
     };
 
-    // cancel button
-    cancelBtn.onclick = function() {
+    cancelBtn.onclick = () => {
         modal.classList.remove('active');
         modal.setAttribute('aria-hidden', 'true');
     };
 }
 
-async function castVote(cid, index) {
+async function proceedWithVote(cid, index) {
     isVoting = true;
-
-    document.querySelectorAll('.evm-button').forEach(function(b) {
-        b.disabled = true;
-    });
+    document.querySelectorAll('.evm-button').forEach(b => b.disabled = true);
     let led = document.getElementById('led-' + cid);
     if (led) led.classList.add('active');
-    playBeepSound();
-    await runVVPAT(candidates[index]);
+    playBeep();
+    await runVVPATSequence(candidates[index]);
     if (led) led.classList.remove('active');
-    saveVoteRecord(cid);
-
+    saveVoteInternal(cid);
     isVoting = false;
 }
 
-function saveVoteRecord(cid) {
-    let record = {
-        hash: sessionHash,
-        candidateId: cid,
-        ts: new Date().toISOString()
-    };
-
-    ledger.push(record);
+function saveVoteInternal(cid) {
+    let newRecord = { hash: sessionHash, candidateId: cid, ts: new Date().toISOString() };
+    ledger.push(newRecord);
     localStorage.setItem(LS_KEY, JSON.stringify(ledger));
     localStorage.setItem(LS_KEY + '_meta', ledger.length.toString());
     if (db) {
-        let tx = db.transaction(IDB_STORE, 'readwrite');
-        tx.objectStore(IDB_STORE).put({ id: sessionHash, ...record });
+        let tx = db.transaction(IDB_STORE, "readwrite");
+        tx.objectStore(IDB_STORE).put({ id: sessionHash, ...newRecord });
     }
-    setTimeout(function() {
+    setTimeout(() => {
         goToView('results');
     }, 1500);
 }
 
-function loadResults() {
+function showMyResults() {
     let counts = {};
     candidates.forEach(c => counts[c.party] = 0);
-
     ledger.forEach(entry => {
         if (entry.candidateId) {
             let candidate = candidates.find(c => c.id === entry.candidateId);
@@ -363,33 +317,26 @@ function loadResults() {
         cardContainer.innerHTML = '';
         candidates.forEach(c => {
             let card = document.createElement('div');
-            card.className = 'result-card ' + (c.cssClass || 'bg-blue');
-            card.innerHTML = '<h4>' + c.party + '</h4><div class="count">' + counts[c.party] + '</div>';
+            card.className = `result-card ${c.cssClass || 'bg-blue'}`;
+            card.innerHTML = `<h4>${c.party}</h4><div class="count">${counts[c.party]}</div>`;
             cardContainer.appendChild(card);
         });
     }
+
     let canvas = document.getElementById('resultsChart');
     if (!canvas) return;
-
     let ctx = canvas.getContext('2d');
-    if (chartInstance) chartInstance.destroy();
+    if (myChartInstance) myChartInstance.destroy();
+    let totalV = Object.values(counts).reduce((a, b) => a + b, 0);
 
-    let totalVotes = Object.values(counts).reduce((a, b) => a + b, 0);
-
-    if (totalVotes === 0) {
-        chartInstance = new Chart(ctx, {
+    if (totalV === 0) {
+        myChartInstance = new Chart(ctx, {
             type: 'pie',
-            data: {
-                labels: ['No Votes'],
-                datasets: [{ data: [1], backgroundColor: ['#e0e0e0'] }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
+            data: { labels: ['No Votes Cast'], datasets: [{ data: [1], backgroundColor: ['#e0e0e0'] }] },
+            options: { responsive: true, maintainAspectRatio: false }
         });
     } else {
-        chartInstance = new Chart(ctx, {
+        myChartInstance = new Chart(ctx, {
             type: 'pie',
             data: {
                 labels: candidates.map(c => c.party),
@@ -405,10 +352,10 @@ function loadResults() {
                     legend: { position: 'bottom' },
                     tooltip: {
                         callbacks: {
-                            label: function(context) {
+                            label: function (context) {
                                 let val = context.raw;
-                                let pct = ((val / totalVotes) * 100).toFixed(1);
-                                return context.label + ': ' + val + ' votes (' + pct + '%)';
+                                let pct = ((val / totalV) * 100).toFixed(1);
+                                return `${context.label}: ${val} votes (${pct}%)`;
                             }
                         }
                     }
@@ -418,45 +365,33 @@ function loadResults() {
     }
 }
 
-function setupButtons() {
-    // login button
+function setupMyButtons() {
     let loginBtn = document.getElementById('btn-login');
     if (loginBtn) loginBtn.onclick = loginUser;
-
     let inputEl = document.getElementById('voter-id-input');
-    if (inputEl) {
-        inputEl.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') loginUser();
-        });
-    }
-
+    if (inputEl) inputEl.addEventListener('keypress', e => { if (e.key === 'Enter') loginUser(); });
     let resBtn = document.getElementById('btn-result-access');
-    if (resBtn) resBtn.onclick = function() { goToView('results'); };
-
+    if (resBtn) resBtn.onclick = () => goToView('results');
     let resetBtn = document.getElementById('btn-reset-session');
-    if (resetBtn) {
-        resetBtn.onclick = function() {
-            sessionHash = null;
-            location.reload();
-        };
-    }
-    let modalCancel = document.getElementById('btn-modal-cancel');
-    if (modalCancel) {
-        modalCancel.onclick = function() {
-            let modal = document.getElementById('confirmation-modal');
-            if (modal) {
-                modal.classList.remove('active');
-                modal.setAttribute('aria-hidden', 'true');
-            }
-        };
-    }
+    if (resetBtn) resetBtn.onclick = () => { sessionHash = null; location.reload(); };
 
+    // Bind Modal Cancel button (as secondary safety)
+    let modalCancel = document.getElementById('btn-modal-cancel');
+    if (modalCancel) modalCancel.onclick = () => {
+        let modal = document.getElementById('confirmation-modal');
+        if (modal) {
+            modal.classList.remove('active');
+            modal.setAttribute('aria-hidden', 'true');
+        }
+    };
+
+    // Bind Admin Login to the ECI Emblem in the header
     let emblem = document.querySelector('.emblem-box img');
     if (emblem) emblem.onclick = handleAdminLogin;
 }
 
-function setupKeyboard() {
-    document.addEventListener('keydown', function(e) {
+function setupKeyboardShortcuts() {
+    document.addEventListener('keydown', e => {
         if (e.ctrlKey && e.key === 'r') {
             e.preventDefault();
             let resetBtn = document.getElementById('btn-reset-session');
@@ -465,15 +400,13 @@ function setupKeyboard() {
     });
 }
 
-function showAlert(message) {
+function showError(message) {
     let alertSection = document.getElementById('integrity-announcement');
     if (alertSection) {
-        alertSection.innerHTML = '<div class="gov-warning">' + message + '</div>';
-        setTimeout(function() {
-            alertSection.innerHTML = '';
-        }, 5000);
+        alertSection.innerHTML = `<div class="gov-warning">${message}</div>`;
+        setTimeout(() => { alertSection.innerHTML = ''; }, 5000);
     }
 }
 
 window.onload = initSystem;
-window.pressButton = pressButton;
+window.pressBlueButton = pressBlueButton;
